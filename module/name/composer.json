@@ -1,0 +1,19 @@
+{
+  "autoload": {
+    "psr-4": {
+      "VENDORPREFIX\\WHMCS\\CLASSPREFIX\\": "lib"
+    },
+    "files": [
+      "lib/Utils/MODULENAME-functions.php"
+    ]
+  },
+  "require": {
+    "php": "^8.0 | ^8.1",
+    "oblak/whmcs-utils": "^1.0.0"
+  },
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "classmap-authoritative": true
+  }
+}

@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+set -e
+
+whmcs_check() {
+  WHMCS_DIR="$1"
+
+  if [ ! -d "$WHMCS_DIR" ]; then
+    echo "Error: WHMCS directory does not exist."
+    exit 1
+  fi
+
+  if [ ! -w "$WHMCS_DIR" ]; then
+    echo "WHMCS directory is not writable."
+  fi
+
+  echo "WHMCS directory is: $WHMCS_DIR"
+}
+
+install_module() {
+  local LOCAL_MODULE_PATH=""
+  local WHMCS_MODULE_PATH=""
+
+  WHMCS_MODULE_PATH="$WHMCS_DIR/$1"
+  LOCAL_MODULE_PATH="$(realpath "$(pwd)/$1")"
+
+  if [ -n "$IN_PROD" ]; then
+    rm -rf "$WHMCS_MODULE_PATH" > /dev/null 2>&1 || true
+    rsync -a "$LOCAL_MODULE_PATH" "$WHMCS_MODULE_PATH"
+  else
+    unlink "$WHMCS_MODULE_PATH" > /dev/null 2>&1 || true
+    ln -s "$(realpath "$LOCAL_MODULE_PATH")" "$WHMCS_MODULE_PATH"
+  fi
+}
+
+# Check the number of arguments
+if [ $# -gt 2 ] || [ $# -lt 1 ]; then
+  echo "Error: Please provide either one argument (directory path) or two arguments (the --prod flag and the directory path)."
+  exit 1
+fi
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    --prod)
+      IN_PROD=1
+      shift
+      ;;
+    *)
+      WHMCS_DIR="$(realpath "$(pwd)/$key")"
+      shift
+      ;;
+  esac
+done
+
+if [ "$WHMCS_ENV" = "production" ]; then
+  IN_PROD=1
+fi
+
+if [ -n "$IN_PROD" ]; then
+  echo "Running in production mode"
+else
+  echo "Running in non-production mode"
+fi
+
+whmcs_check "$WHMCS_DIR"
+
+MODULE_FILE='./.manifest'
+
+if [ ! -f "$MODULE_FILE" ] || [ ! -s "$MODULE_FILE" ] ; then
+  echo ".manifest file is missing. Please add your addon manifest paths"
+  exit 1
+fi
+
+while IFS= read -r MODULE_PATH
+do
+    printf "Installing: %s\n" "$MODULE_PATH"
+    install_module "$MODULE_PATH"
+done < "$MODULE_FILE"
+
+echo "Done."
+echo
