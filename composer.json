@@ -1,6 +1,6 @@
 {
   "name": "oblak/whmcs-addon",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "template",
   "license": "MIT",
   "require-dev": {
