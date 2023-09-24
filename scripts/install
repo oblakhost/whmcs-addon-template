@@ -12,8 +12,6 @@ whmcs_check() {
   if [ ! -w "$WHMCS_DIR" ]; then
     echo "WHMCS directory is not writable."
   fi
-
-  echo "WHMCS directory is: $WHMCS_DIR"
 }
 
 install_module() {
@@ -23,8 +21,13 @@ install_module() {
   WHMCS_MODULE_PATH="$WHMCS_DIR/$1"
   LOCAL_MODULE_PATH="$(realpath "$(pwd)/$1")"
 
+  if [ -d "$LOCAL_MODULE_PATH" ]; then
+    LOCAL_MODULE_PATH="$LOCAL_MODULE_PATH/"
+  fi
+
   if [ -n "$IN_PROD" ]; then
     rm -rf "$WHMCS_MODULE_PATH" > /dev/null 2>&1 || true
+
     rsync -a "$LOCAL_MODULE_PATH" "$WHMCS_MODULE_PATH"
   else
     unlink "$WHMCS_MODULE_PATH" > /dev/null 2>&1 || true
@@ -64,6 +67,7 @@ else
 fi
 
 whmcs_check "$WHMCS_DIR"
+echo "WHMCS directory is: $WHMCS_DIR"
 
 MODULE_FILE='./.manifest'
 
@@ -72,11 +76,13 @@ if [ ! -f "$MODULE_FILE" ] || [ ! -s "$MODULE_FILE" ] ; then
   exit 1
 fi
 
-while IFS= read -r MODULE_PATH
-do
-    printf "Installing: %s\n" "$MODULE_PATH"
-    install_module "$MODULE_PATH"
-done < "$MODULE_FILE"
+# Get the manifest paths from the .manifest file
+MODULE_PATHS=$(cat ./.manifest)
+
+for MODULE_PATH in $MODULE_PATHS; do
+  printf "Installing: %s\n" "$MODULE_PATH"
+  install_module "$MODULE_PATH"
+done
 
 echo "Done."
 echo
