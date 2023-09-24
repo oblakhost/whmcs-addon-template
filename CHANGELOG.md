@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/oblakhost/whmcs-addon-template/compare/v1.0.1...v1.0.2) (2023-09-24)
+
+
+### Bug Fixes
+
+* Fixed installation script rsync ([8100888](https://github.com/oblakhost/whmcs-addon-template/commit/8100888a65b5034b56598bf0afba69fdb7cdc1dc))
+
 ## [1.0.1](https://github.com/oblakhost/whmcs-addon-template/compare/v1.0.0...v1.0.1) (2023-09-24)
 
 
