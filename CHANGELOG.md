@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/oblakhost/whmcs-addon-template/compare/v1.0.0...v1.0.1) (2023-09-24)
+
+
+### Bug Fixes
+
+* Added license field ([aee7db3](https://github.com/oblakhost/whmcs-addon-template/commit/aee7db3c65edb347682968ccbdd63542fdb423fe))
+
 # 1.0.0 (2023-09-24)
 
 
